@@ -13,9 +13,9 @@ An ASP.NET MVC v5.1 files hosting server.
 *  	File searching by Filename, Size, Type
 *  	Paging
 *  	Admin area with scaffolding
-*  	Mapping Models-ViewModels with AutoMapper
-*  	Dependency injection with Ninject
-*  	CSS by Bootstrap
+*  	Mapping Models-ViewModels with [AutoMapper](http://automapper.org/)
+*  	Dependency injection with [Ninject](http://www.ninject.org/)
+*  	CSS by [Bootstrap](http://getbootstrap.com/)
 *	Sample data downloaded via [TumblrPicDownloader](https://github.com/TsvetanKT/TumblrPicDownloader) from [its-a-cat-world](http://its-a-cat-world.tumblr.com/) and [thedailywag](http://thedailywag.tumblr.com/)
 
 
