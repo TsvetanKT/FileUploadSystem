@@ -7,9 +7,9 @@ An ASP.NET MVC v5.1 files hosting server.
 *	MS SQL Database
 *	Entity Framework (Code First)
 *	Authentication: Unregistered, Registered and Admins
-..*	All users can Download files
-..*	Registered users can Upload/Delete their own files
-..* Administrators can Delete/Edit all files
+ *	All users can Download files
+ *	Registered users can Upload/Delete their own files
+ * Administrators can Delete/Edit all files
 *  	File searching by Filename, Size, Type
 *  	Paging
 *  	Admin area with scaffolding
