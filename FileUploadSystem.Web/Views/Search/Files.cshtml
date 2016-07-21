@@ -1,0 +1,124 @@
+﻿@using FileUploadSystem.Common;
+@using PagedList;
+@using PagedList.Mvc;
+
+@model FileUploadSystem.Web.ViewModels.Search.SearchViewModel
+
+<div class="container">
+    <h1>Search files</h1>
+    <a href="/Search/Users" class="btn btn-default">Search Users</a>
+    <hr />
+
+    @using (Html.BeginForm("Files", "Search", FormMethod.Get, new { @class = "form-horizontal" }))
+    {
+        @Html.Partial("_SearchForm")
+    }
+
+    <hr />
+    <h3>@(Model.SearchLocation ?? "Search in all files")</h3>
+    <div class="btn-toolbar">
+        @if (Model.SearchLocation != null && !Model.InUserPage)
+        {
+            var wat = Model.SearchLocation;
+            int currentDirectoryId = -1;
+            if (int.TryParse(Url.RequestContext.RouteData.Values["id"].ToString(), out currentDirectoryId))
+            {
+            }
+
+            @Html.ActionLink("Upper Directory", "Upper", new { currentDirectory = currentDirectoryId }, new { @class = "btn btn-default" });
+        }
+
+    </div>
+
+    @if (Model != null && Model.SearchResults.Count != 0)
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th class="col-md-9">
+                        @Html.ActionLink("File Name", "Files", new
+                            {
+                                page = Request["page"],
+                                sortBy = Model.SortBy == "Name" ? "Name desc" : "Name",
+                                fileName = Request["fileName"],
+                                fileType = Request["fileType"],
+                                fromSize = Request["fromSize"],
+                                toSize = Request["toSize"],
+                                dim = Request["dim"]
+                            })
+                    </th>
+                    <th class="col-md-1">
+                        @Html.ActionLink("Size", "Files", new
+                            {
+                                page = Request["page"],
+                                sortBy = Model.SortBy == "Size" ? "Size desc" : "Size",
+                                fileName = Request["fileName"],
+                                fileType = Request["fileType"],
+                                fromSize = Request["fromSize"],
+                                toSize = Request["toSize"],
+                                dim = Request["dim"]
+                            })
+                    </th>
+                    <th class="col-md-2">
+                        @Html.ActionLink("Owner", "Files", new
+                            {
+                                page = Request["page"],
+                                sortBy = Model.SortBy == "Owner" ? "Owner desc" : "Owner",
+                                fileName = Request["fileName"],
+                                fileType = Request["fileType"],
+                                fromSize = Request["fromSize"],
+                                toSize = Request["toSize"],
+                                dim = Request["dim"]
+
+                            })
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.SearchResults.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Html.ActionLink(Model.SearchResults[i].Name, "Open", "Files", new
+                            {
+                                id = Model.SearchResults[i].Id,
+                                locationName = Model.SearchResults[i].Name
+                            }, null)
+                        </td>
+                        <td>@AssemblyHelpers.ConvertFileSizeToReadableFormat(Model.SearchResults[i].Size)</td>
+                        <td>
+                            @Html.ActionLink(Model.SearchResults[i].OwnerName, "Files", new
+                            {
+                                id = Model.SearchResults[i].OwnerId,
+                                locationName = Model.SearchResults[i].OwnerName
+                            })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.PagedListPager(Model.SearchResults, page => Url.Action("Files",
+                new
+                {
+                    page,
+                    fileName = Request.QueryString["fileName"],
+                    fileType = Request.QueryString["fileType"],
+                    fromSize = Request.QueryString["fromSize"],
+                    toSize = Request.QueryString["toSize"],
+                    locationName = Request["locationName"],
+                    sortBy = Request["sortBy"],
+                    dim = Request["dim"]
+                }),
+                new PagedListRenderOptions()
+                {
+                    Display = PagedListDisplayMode.IfNeeded,
+                    DisplayPageCountAndCurrentLocation = true,
+                }
+            )
+    }
+    else
+    {
+        <p>No results.</p>
+    }
+
+</div>

@@ -1,0 +1,69 @@
+﻿@model FileUploadSystem.Models.FileEntity
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>FileEntity</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Owner.UserName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Owner.UserName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Owner.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Owner.Email)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LocationId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LocationId)
+        </dd>
+
+        <dt>
+            Size
+        </dt>
+
+        <dd>
+            @{
+                var binary = Model as BinaryFile;
+                string size = string.Empty;
+
+                if (binary != null)
+                {
+                    size = AssemblyHelpers.ConvertFileSizeToReadableFormat(binary.Size) + " (" + binary.Size + " Bytes)";
+                }
+                else
+                {
+                    size = "Directory";
+                }
+            }
+            @size
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

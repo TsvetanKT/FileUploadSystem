@@ -1,0 +1,191 @@
+﻿@using FileUploadSystem.Common;
+@using PagedList;
+@using PagedList.Mvc;
+
+@model FileUploadSystem.Web.ViewModels.Upload.UploadViewModel
+
+<div class="container">
+    <h1>My Files</h1>
+    <hr />
+    
+    @Html.Partial("_AlertMessage")
+
+    @using (@Html.BeginForm("Index", "Upload", FormMethod.Get, new { @class = "form-horizontal" }))
+    {
+        string fileType = Request["fileType"] ?? "FilesAndDirectoryes";
+
+        long minSize;
+        if (!long.TryParse(Request["fromSize"], out minSize))
+        {
+            minSize = 0L;
+        }
+
+        long maxSize;
+        if (!long.TryParse(Request["toSize"], out maxSize))
+        {
+            maxSize = 0L;
+        }
+
+        string dim = Request["dim"] ?? "MB";
+
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="fileName">File name:</label>
+            <input id="fileName" type="text" name="fileName" class="form-control input-lg" value="@Request["fileName"]" />
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="type">Search for:</label>
+            <select id="type" name="fileType" class="form-control">
+                <option value="FilesAndDirectoryes" @((fileType == "FilesAndDirectoryes") ? "selected = \"selected\"" : "")>Files and Directoryes</option>
+                <option value="Files" @((fileType == "Files") ? "selected = \"selected\"" : "")>Files</option>
+                <option value="Directoryes" @((fileType == "Directoryes") ? "selected = \"selected\"" : "")>Directoryes</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="fromSize">Size From:</label>
+            <input id="fromSize" type="number" class="form-control input-sm" name="fromSize" min="0" value="@minSize" />
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="toSize">Size To:</label>
+            <input id="toSize" type="number" class="form-control input-mini" name="toSize" min="0" value="@maxSize" />
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="dim">Size Dimention:</label>
+            <select id="dim" name="dim" class="form-control">
+                <option value="Bytes" @((dim == "Bytes") ? "selected = \"selected\"" : "")>Bytes</option>
+                <option value="KB" @((dim == "KB") ? "selected = \"selected\"" : "")>KB</option>
+                <option value="MB" @((dim == "MB") ? "selected = \"selected\"" : "")>MB</option>
+                <option value="GB" @((dim == "GB") ? "selected = \"selected\"" : "")>GB</option>
+            </select>
+        </div>
+
+        <input class="btn btn-primary" type="submit" value="Search" />
+    }
+    <hr />
+    <h3>@(Model.SearchLocation ?? "Search in all files")</h3>
+    <div class="btn-toolbar">
+        @Html.ActionLink("Main Directory", "Index", new { id = "" }, new { @class = "btn btn-default" })
+        @if (Model.SearchLocation != null)
+        {
+            @Html.ActionLink("Upper Directory", "Upper", new { current = Model.CurrentDirectoryId ?? -1 }, new { @class = "btn btn-default" });
+            @Html.Partial("_CreateDirectory", Model.CurrentDirectoryId ?? -1);
+        }
+    </div>
+    <br />
+    @if (Model.SearchLocation != null)
+    {
+        using (Html.BeginForm("Upload", "Upload", new { currentDirectory = Model.CurrentDirectoryId }, FormMethod.Post, new { @class = "form-inline", enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken();
+            <div class="form-group">
+                <input type="file" value="Choose File"  name="uploadFile" data-buttontext="Find file">
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-default" value="Upload File" disabled />
+            </div>
+        }
+    }
+
+    @if (Model.SearchResults != null && Model.SearchResults.Count != 0)
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th class="col-md-9">
+                        @Html.ActionLink("File Name", "Index", new
+                            {
+                                page = Request["page"],
+                                sortBy = Model.SortBy == "Name" ? "Name desc" : "Name",
+                                fileName = Request["fileName"],
+                                fileType = Request["fileType"],
+                                fromSize = Request["fromSize"],
+                                dim = Request["dim"],
+                                toSize = Request["toSize"]
+                            })
+                    </th>
+                    <th class="col-md-1">
+                        @Html.ActionLink("Size", "Index", new
+                            {
+                                page = Request["page"],
+                                sortBy = Model.SortBy == "Size" ? "Size desc" : "Size",
+                                fileName = Request["fileName"],
+                                fileType = Request["fileType"],
+                                fromSize = Request["fromSize"],
+                                dim = Request["dim"],
+                                toSize = Request["toSize"]
+                            })
+                    </th>
+                    <th class="col-md-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{var len = Model.SearchResults.Count;}
+                @for (int i = 0; i < len; i++)
+                {
+                    var size = AssemblyHelpers.ConvertFileSizeToReadableFormat(Model.SearchResults[i].Size);
+                    <tr>
+                        <td><a href="/Upload/Open/@Model.SearchResults[i].Id">@Model.SearchResults[i].Name</a></td>
+                        <td>@size</td>
+                        <td>
+                            @Html.Partial("_Rename", Model.SearchResults[i])
+                           |
+                            @Html.Partial("_Delete", Model.SearchResults[i])
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.PagedListPager(Model.SearchResults, page => Url.Action("Index",
+                new
+                {
+                    page,
+                    fileName = Request["fileName"],
+                    fileType = Request["fileType"],
+                    fromSize = Request["fromSize"],
+                    toSize = Request["toSize"],
+                    dim = Request["dim"],
+                    sortBy = Request["sortBy"]
+                }),
+                new PagedListRenderOptions()
+                {
+                    Display = PagedListDisplayMode.IfNeeded,
+                    DisplayPageCountAndCurrentLocation = true,
+                }
+            )
+    }
+    else
+    {
+        <p>No results.</p>
+    }
+     
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+<script type="text/javascript">
+    $(document).ready(
+    function () {
+        var maxSize = @GlobalConstants.MaxUploadFileSize
+        $('input:file').change(
+            function () {
+                if ($(this).val()) 
+                {
+                    if (this.files[0].size > maxSize){
+                        var message = "The max upload file size is set to " +
+                            maxSize / 1000000 +
+                            " MB\nYour file is bigger (" +
+                            this.files[0].size / 1000000 +
+                            " MB)!";
+                        alert(message);
+                    } else {
+                        $('input:submit').attr('disabled', false);
+                    }
+                }
+            });
+        $('.rename, .delete, #create').click(function (event) {
+            var searchedId = '#modal' + event.target.id;
+            $(searchedId).modal('show');
+        });
+    });
+</script>
+}

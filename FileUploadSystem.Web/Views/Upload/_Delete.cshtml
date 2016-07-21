@@ -1,0 +1,31 @@
+﻿@model FileUploadSystem.Web.ViewModels.Upload.FileViewModel
+
+@{
+    var buttonId = "_d" + Model.Id;
+    var modalId = "modal" + buttonId;
+    var fileType = Model.Size == -1 ? "directory" : "file";
+}
+<a href="#" id="@buttonId" class="delete">Delete</a>
+<!-- Modal HTML -->
+<div id="@modalId" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("Delete", "Upload", new { fileId = Model.Id }, FormMethod.Post, new { role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Delete</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Delete this @fileType</p>
+                    <p>@Model.Name</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" value="Delete" class="btn btn-primary" />
+                </div>
+            }
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,50 @@
+﻿@{
+    string fileType = Request["fileType"] ?? "FilesAndDirectoryes";
+
+    long minSize;
+    if (!long.TryParse(Request["fromSize"], out minSize))
+    {
+        minSize = 0L;
+    }
+
+    long maxSize;
+    if (!long.TryParse(Request["toSize"], out maxSize))
+    {
+        maxSize = 0L;
+    }
+
+    string dim = Request.QueryString["dim"] ?? "MB";
+    }
+
+<input type="hidden" name="locationName" value="@Request["locationName"]" />
+<div class="form-group">
+    <label class="control-label col-sm-2" for="fileName">File name:</label>
+    <input id="fileName" type="text" name="fileName" class="form-control input-lg" value="@Request["fileName"]" />
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="type">Search for:</label>
+    <select id="type" name="fileType" class="form-control">
+        <option value="FilesAndDirectoryes" @((fileType == "FilesAndDirectoryes") ? "selected = \"selected\"" : "")>Files and Directoryes</option>
+        <option value="Files" @((fileType == "Files") ? "selected = \"selected\"" : "")>Files</option>
+        <option value="Directoryes" @((fileType == "Directoryes") ? "selected = \"selected\"" : "")>Directoryes</option>
+    </select>
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="fromSize">Size From:</label>
+    <input id="fromSize" type="number" class="form-control input-sm" name="fromSize" min="0" value="@minSize" />
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="toSize">Size To:</label>
+    <input id="toSize" type="number" class="form-control input-mini" name="toSize" min="0" value="@maxSize" />
+</div>
+<div class="form-group">
+    <label class="control-label col-sm-2" for="dim">Size Dimention:</label>
+    <select id="dim" name="dim" class="form-control">
+        <option value="Bytes" @((dim == "Bytes") ? "selected = \"selected\"" : "")>Bytes</option>
+        <option value="KB" @((dim == "KB") ? "selected = \"selected\"" : "")>KB</option>
+        <option value="MB" @((dim == "MB") ? "selected = \"selected\"" : "")>MB</option>
+        <option value="GB" @((dim == "GB") ? "selected = \"selected\"" : "")>GB</option>
+    </select>
+</div>
+
+<input class="btn btn-primary" type="submit" value="Search" />

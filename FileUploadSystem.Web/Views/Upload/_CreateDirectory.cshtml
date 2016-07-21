@@ -1,0 +1,25 @@
+﻿@model int
+<a href="#" id="create" class="btn btn-default">Create Directory Here</a>
+<!-- Modal HTML -->
+<div id="modalcreate" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            @using (Html.BeginForm("CreateDirectory", "Upload", new { parentDirectoryId = Model }, FormMethod.Post, new { role = "form" }))
+            {
+                @Html.AntiForgeryToken()
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Create directory</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Directory name:</p>
+                    <input id="directoryName" type="text" name="directoryName" value="" class="form-control" style="max-width: 100%;" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            }
+        </div>
+    </div>
+</div> 

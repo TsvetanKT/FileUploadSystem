@@ -1,0 +1,129 @@
+﻿@using FileUploadSystem.Common;
+@using PagedList;
+@using PagedList.Mvc;
+
+@model FileUploadSystem.Web.ViewModels.Search.SearchViewModel
+
+<div class="container">
+    <h1>CheckDbFileValidity</h1>
+    <hr />
+
+    @Html.Partial("_AlertMessage")
+
+    <hr />
+    <h3>Files existing in database, but missing on disk.</h3>
+    <div class="btn-toolbar">
+    </div>
+
+    @if (Model != null && Model.SearchResults.Count != 0)
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th class="col-md-1">
+                        Id
+                    </th>
+                    <th class="col-md-6">
+                        @Html.ActionLink("File Name", "Index", new
+                            {
+                                page = Request["page"],
+                                sortBy = Model.SortBy == "Name" ? "Name desc" : "Name",
+                                fileName = Request["fileName"],
+                                fileType = Request["fileType"],
+                                fromSize = Request["fromSize"],
+                                toSize = Request["toSize"],
+                                dim = Request["dim"]
+                            })
+                    </th>
+                    <th class="col-md-1">
+                        @Html.ActionLink("Size", "Index", new
+                            {
+                                page = Request["page"],
+                                sortBy = Model.SortBy == "Size" ? "Size desc" : "Size",
+                                fileName = Request["fileName"],
+                                fileType = Request["fileType"],
+                                fromSize = Request["fromSize"],
+                                toSize = Request["toSize"],
+                                dim = Request["dim"]
+                            })
+                    </th>
+                    <th class="col-md-2">
+                        @Html.ActionLink("Owner", "Index", new
+                            {
+                                page = Request["page"],
+                                sortBy = Model.SortBy == "Owner" ? "Owner desc" : "Owner",
+                                fileName = Request["fileName"],
+                                fileType = Request["fileType"],
+                                fromSize = Request["fromSize"],
+                                toSize = Request["toSize"],
+                                dim = Request["dim"]
+                            })
+                    </th>
+                    <th class="col-md-2">
+                        Actions
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.SearchResults.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Model.SearchResults[i].Id
+                        </td>
+                        <td>
+                            @Html.ActionLink(Model.SearchResults[i].Name, "Open", "AdminFiles", new
+                            {
+                                id = Model.SearchResults[i].Id,
+                                locationName = Model.SearchResults[i].Name
+                            }, null)
+                        </td>
+                        <td>@AssemblyHelpers.ConvertFileSizeToReadableFormat(Model.SearchResults[i].Size)</td>
+                        <td>
+                            @Html.ActionLink(Model.SearchResults[i].OwnerName, "Index", new
+                            {
+                                id = Model.SearchResults[i].OwnerId,
+                                locationName = Model.SearchResults[i].OwnerName
+                            })
+                        </td>
+                        <td>
+                            @using (Html.BeginForm(
+                                "Delete", 
+                                "AdminFiles",
+                                new { id = Model.SearchResults[i].Id, action = "CheckDbFilesValidity" }, 
+                                FormMethod.Post, 
+                                null))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="submit" value="Delete" class="btn" />
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.PagedListPager(Model.SearchResults, page => Url.Action("Index",
+                new
+                {
+                    page,
+                    fileName = Request.QueryString["fileName"],
+                    fileType = Request.QueryString["fileType"],
+                    fromSize = Request.QueryString["fromSize"],
+                    toSize = Request.QueryString["toSize"],
+                    locationName = Request["locationName"],
+                    sortBy = Request["sortBy"],
+                    dim = Request["dim"]
+                }),
+                new PagedListRenderOptions()
+                {
+                    Display = PagedListDisplayMode.IfNeeded,
+                    DisplayPageCountAndCurrentLocation = true,
+                }
+            )
+    }
+    else
+    {
+        <p>No results.</p>
+    }
+
+</div>

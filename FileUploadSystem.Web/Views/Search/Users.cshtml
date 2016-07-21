@@ -1,0 +1,58 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+
+@model IPagedList<FileUploadSystem.Web.ViewModels.Search.UserViewModel>
+
+<div class="container">
+    <h1>Search Users</h1>
+    <a href="/Search/Files" class="btn btn-default">Search Files</a>
+    <hr />
+    @using (@Html.BeginForm("Users", "Search", FormMethod.Get, new { @class = "form-horizontal" }))
+    {
+        <div class="form-group">
+            <label class="control-label col-sm-2" for="userName">User Name:</label>
+            <input id="userName" type="text" name="userName" class="form-control input-lg" value="@Request.QueryString["userName"]" />
+        </div>
+        <input class="btn btn-primary" type="submit" value="Search" />
+    }
+    <br />
+    @if (Model == null && Model.Count == 0)
+    {
+        <p>No results.</p>
+    }
+    else
+    {
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>User Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td>
+                        @Html.ActionLink(Model[i].UserName, "Files", new
+                        {
+                            id = Model[i].Id,
+                            locationName = Model[i].UserName
+                        })
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @Html.PagedListPager(Model, page => Url.Action("Users",
+                    new
+                    {
+                        page
+                    }),
+                    new PagedListRenderOptions()
+                    {
+                        Display = PagedListDisplayMode.IfNeeded,
+                        DisplayPageCountAndCurrentLocation = true,
+                    }
+                )
+    }
+</div>

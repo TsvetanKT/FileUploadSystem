@@ -1,0 +1,9 @@
+﻿@if (TempData["Message"] != null)
+{
+    string alert = (bool)TempData["ErrorFound"] == true ? "danger" : "success";
+
+    <div class="alert alert-@alert">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        @TempData["Message"]
+    </div>
+}
