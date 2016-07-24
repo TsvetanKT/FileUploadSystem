@@ -26,12 +26,12 @@ namespace FileUploadSystem.Data.Migrations
         {
             //GlobalConstants.UploadDirectory = AssemblyHelpers.UploadDirectoryLocation(Assembly.GetExecutingAssembly());
             GlobalConstants.UploadDirectory = AssemblyHelpers.GetDirectoryForAssembyl(Assembly.GetExecutingAssembly()) + "/Uploads";
-            //var test = GlobalConstants.UploadDirectory;
+            var test = GlobalConstants.UploadDirectory;
 
-            //this.userManager = new UserManager<User>(new UserStore<User>(context));
-            //this.SeedRoles(context);
-            //this.SeedUsers(context);
-            //this.SeedFiles(context);
+            this.userManager = new UserManager<User>(new UserStore<User>(context));
+            this.SeedRoles(context);
+            this.SeedUsers(context);
+            this.SeedFiles(context);
             context.SaveChanges();
         }
 
@@ -76,7 +76,7 @@ namespace FileUploadSystem.Data.Migrations
             }
 
             var admin = new User { Email = "kokoZ@koko.com", UserName = "Administrator" };
-            this.userManager.Create(admin, "kokokoko");
+            this.userManager.Create(admin, "adminPass123!");
 
             this.userManager.AddToRole(admin.Id, GlobalConstants.AdminRole);
         }
